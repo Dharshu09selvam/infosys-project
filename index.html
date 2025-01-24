@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Image to Context</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="flex items-center justify-center min-h-screen bg-gray-100">
+        <div class="bg-white p-6 rounded-lg shadow-md w-1/2">
+            <h1 class="text-2xl font-bold text-center text-gray-800 mb-4">AI-Powered Image to Context</h1>
+            <form id="imageForm" enctype="multipart/form-data">
+                <label class="block mb-2 text-gray-700">Upload an Image:</label>
+                <input type="file" name="file" id="fileInput" class="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md" required>
+                <button type="submit" class="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 w-full">Upload and Analyze</button>
+            </form>
+
+            <div id="result" class="mt-6 hidden">
+                <h2 class="text-xl font-semibold text-gray-800">Image Context:</h2>
+                <p id="caption" class="text-gray-600 mt-2"></p>
+                <h3 class="mt-4 text-lg font-medium text-gray-800">Sentiment Analysis:</h3>
+                <p id="sentiment" class="text-gray-600"></p>
+                <p id="confidence" class="text-gray-600"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('imageForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            const fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
+
+            const response = await fetch('/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                alert('Error: ' + data.error);
+            } else {
+                document.getElementById('result').classList.remove('hidden');
+                document.getElementById('caption').innerText = data.caption;
+                document.getElementById('sentiment').innerText = `Sentiment: ${data.sentiment}`;
+                document.getElementById('confidence').innerText = `Confidence: ${data.confidence.toFixed(2)}`;
+            }
+        });
+    </script>
+</body>
+</html>
